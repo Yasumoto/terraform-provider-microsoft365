@@ -1,0 +1,67 @@
+---
+page_title: "{{.Name}} {{.Type}} - {{.ProviderName}}"
+subcategory: "Device Management"
+
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description | trimspace }}
+
+## Microsoft Documentation
+
+- [depMacOSEnrollmentProfile resource type](https://learn.microsoft.com/en-us/graph/api/resources/intune-enrollment-depmacosenrollmentprofile?view=graph-rest-beta)
+- [Create enrollmentProfile](https://learn.microsoft.com/en-us/graph/api/intune-enrollment-deponboardingsetting-post-enrollmentprofiles?view=graph-rest-beta)
+- [Get depMacOSEnrollmentProfile](https://learn.microsoft.com/en-us/graph/api/intune-enrollment-enrollmentprofile-get?view=graph-rest-beta)
+- [Update depMacOSEnrollmentProfile](https://learn.microsoft.com/en-us/graph/api/intune-enrollment-enrollmentprofile-update?view=graph-rest-beta)
+- [Delete enrollmentProfile](https://learn.microsoft.com/en-us/graph/api/intune-enrollment-enrollmentprofile-delete?view=graph-rest-beta)
+
+## Microsoft Graph API Permissions
+
+The following client `application` permissions are needed in order to use this {{.Type | lower}}:
+
+**Required:**
+- `DeviceManagementServiceConfig.ReadWrite.All`
+
+**Optional:**
+- `None` `[N/A]`
+
+## Version History
+
+| Version | Status | Notes |
+|---------|--------|-------|
+| v0.46.0-alpha | Experimental | Initial release |
+
+## Example Usage
+
+### Basic Configuration
+
+{{ tffile "examples/resources/microsoft365_graph_beta_device_management_dep_macos_enrollment_profile/basic.tf" }}
+
+### Zero-Touch Deployment with LAPS
+
+{{ tffile "examples/resources/microsoft365_graph_beta_device_management_dep_macos_enrollment_profile/zero_touch.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Important Notes
+
+- **Apple Business Manager / School Manager**: This resource requires that your organization has set up Apple Business Manager (ABM) or Apple School Manager (ASM) and synced tokens with Microsoft Intune.
+- **DEP Onboarding Settings**: The `dep_onboarding_settings_id` is optional - if not provided, the provider will automatically resolve it from the Intune account ID.
+- **Setup Assistant Customization**: Use boolean fields to control which Setup Assistant screens are shown during enrollment. The provider automatically converts these to the `enabledSkipKeys` array in the API.
+- **LAPS Support**: Configure Local Administrator Password Solution (LAPS) for automatic password rotation using the `dep_profile_admin_account_password_rotation_setting` nested block.
+- **Admin Account Creation**: When `admin_account_user_name`, `admin_account_full_name`, and `admin_account_password` are provided, a local administrator account is created on enrolled devices.
+- **Write-Only Password**: The `admin_account_password` field is write-only - the API never returns this value. Terraform preserves it from the configuration for proper state management.
+- **Privacy and Registration Screens**: The `privacy_pane_disabled` and `registration_disabled` fields control screens that cannot be skipped via the `enabledSkipKeys` array due to Microsoft Graph API limitations. These work via their boolean properties only.
+- **Zero-Touch Enrollment**: Set `skip_primary_setup_account_creation` to `true` and configure admin accounts for fully automated zero-touch deployment scenarios.
+- **Supervised Mode**: Enable `supervised_mode_enabled` to unlock additional device management capabilities including advanced restrictions and configuration options.
+- **Device Naming**: Use the `device_name_template` field with variables like `%SERIAL%`, `%RAND:X%`, or `%DEVICETYPE%` to automatically name devices during enrollment.
+- **Mandatory Enrollment**: Set `is_mandatory` to `true` to prevent users from skipping enrollment, ensuring all devices are properly managed.
+
+## Import
+
+Import is supported using the following syntax:
+
+{{ codefile "shell" "examples/resources/microsoft365_graph_beta_device_management_dep_macos_enrollment_profile/import.sh" }}

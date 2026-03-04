@@ -38,6 +38,16 @@ func GraphToFrameworkStringWithDefault(value *string, defaultValue string) types
 	return types.StringValue(*value)
 }
 
+// GraphToFrameworkStringNullIfEmpty converts a Graph SDK string pointer to a Terraform Framework string,
+// treating both nil and empty strings as null. Use for optional string fields where the API
+// returns "" for unset values and you want them represented as null in Terraform state.
+func GraphToFrameworkStringNullIfEmpty(value *string) types.String {
+	if value == nil || *value == "" {
+		return types.StringNull()
+	}
+	return types.StringValue(*value)
+}
+
 // GraphToFrameworkBool converts a Graph SDK bool pointer to a Terraform Framework bool.
 // Returns types.BoolNull() if the input is nil.
 func GraphToFrameworkBool(value *bool) types.Bool {

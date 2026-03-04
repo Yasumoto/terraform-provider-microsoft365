@@ -258,7 +258,7 @@ func ReadWithRetry(
 		}
 
 		if containerIdentity := stateContainer.GetIdentity(); containerIdentity != nil {
-			if identityState, ok := containerIdentity.(*tfsdk.ResourceIdentity); ok {
+			if identityState, ok := containerIdentity.(*tfsdk.ResourceIdentity); ok && identityState != nil {
 				readResp.Identity = identityState
 			}
 		}

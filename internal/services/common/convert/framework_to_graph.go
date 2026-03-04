@@ -28,6 +28,20 @@ func FrameworkToGraphString(value basetypes.StringValue, setter func(*string)) {
 	}
 }
 
+// FrameworkToGraphStringOrNil sets a Graph SDK string property from a Terraform Framework string,
+// explicitly sending nil when the value is null or empty string. This is useful for optional
+// fields where you need to clear the value in the API when removed from config.
+func FrameworkToGraphStringOrNil(value basetypes.StringValue, setter func(*string)) {
+	if value.IsUnknown() {
+		return
+	}
+	if value.IsNull() || value.ValueString() == "" {
+		setter(nil)
+	} else {
+		FrameworkToGraphString(value, setter)
+	}
+}
+
 // FrameworkToGraphBool sets a Graph SDK bool property from a Terraform Framework bool.
 // Only sets the value if it's not null or unknown.
 func FrameworkToGraphBool(value basetypes.BoolValue, setter func(*bool)) {

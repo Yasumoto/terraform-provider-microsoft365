@@ -377,6 +377,36 @@ func TestReadWithRetry_IdentityPropagation(t *testing.T) {
 	}
 }
 
+func TestReadWithRetry_TypedNilIdentityNotPropagated(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// This tests the "typed nil in interface" bug:
+	// When a typed nil (*tfsdk.ResourceIdentity)(nil) is stored in an any interface,
+	// the interface itself is non-nil (it knows its type), but the underlying value is nil.
+	// Without proper nil checking, this could cause a panic when calling methods on it.
+	var typedNilIdentity *tfsdk.ResourceIdentity = nil
+
+	mockReadFunc := func(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+		// resp.Identity should NOT be set when the source identity is a typed nil
+		if resp.Identity != nil {
+			t.Error("resp.Identity should be nil when container identity is a typed nil pointer")
+		}
+	}
+
+	readReq := resource.ReadRequest{}
+	stateContainer := &mockStateContainer{
+		identity: typedNilIdentity, // typed nil wrapped in any interface
+	}
+	opts := DefaultReadWithRetryOptions()
+
+	err := ReadWithRetry(ctx, mockReadFunc, readReq, stateContainer, opts)
+
+	if err != nil {
+		t.Errorf("Expected no error, got: %v", err)
+	}
+}
+
 func TestExtractResourceID(t *testing.T) {
 	ctx := context.Background()
 
