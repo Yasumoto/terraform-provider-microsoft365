@@ -62,6 +62,34 @@ func UseStateForUnknownString() StringModifier {
 	}
 }
 
+// UseStateForUnknownStringIncludingNull sets the plan value to the state value when the plan
+// is unknown, including when the state is null. Use this for Optional+Computed string fields
+// where null is a valid state (e.g., mapped from empty API values via StringNullIfEmpty).
+// Unlike UseStateForUnknownString, this prevents "(known after apply)" noise after import.
+type useStateForUnknownStringIncludingNull struct {
+	stringModifier
+}
+
+func (m useStateForUnknownStringIncludingNull) PlanModifyString(ctx context.Context, req planmodifier.StringRequest, resp *planmodifier.StringResponse) {
+	if !req.PlanValue.IsUnknown() {
+		return
+	}
+
+	if req.ConfigValue.IsNull() {
+		resp.PlanValue = req.StateValue
+	}
+}
+
+// UseStateForUnknownStringIncludingNull constructor
+func UseStateForUnknownStringIncludingNull() StringModifier {
+	return useStateForUnknownStringIncludingNull{
+		stringModifier: stringModifier{
+			description:         "Use state value (including null) if plan is unknown and config is null",
+			markdownDescription: "Use state value (including null) if plan is unknown and config is null",
+		},
+	}
+}
+
 // RequiresReplaceString returns a plan modifier that requires resource replacement if
 // the value changes.
 type requiresReplaceString struct {

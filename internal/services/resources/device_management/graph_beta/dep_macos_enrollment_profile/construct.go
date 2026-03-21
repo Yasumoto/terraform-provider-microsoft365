@@ -7,7 +7,6 @@ import (
 
 	"github.com/deploymenttheory/terraform-provider-microsoft365/internal/services/common/constructors"
 	"github.com/deploymenttheory/terraform-provider-microsoft365/internal/services/common/convert"
-	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -50,24 +49,9 @@ func constructEnrollmentProfile(ctx context.Context, data *DepMacOSEnrollmentPro
 	// properties (privacyPaneDisabled, registrationDisabled) work correctly.
 	requestBody.SetEnabledSkipKeys(buildEnabledSkipKeys(data))
 
-	if !data.EnrollmentTimeAzureAdGroupIds.IsNull() && !data.EnrollmentTimeAzureAdGroupIds.IsUnknown() {
-		var groupIdStrings []types.String
-		diags := data.EnrollmentTimeAzureAdGroupIds.ElementsAs(ctx, &groupIdStrings, false)
-		if diags.HasError() {
-			return nil, fmt.Errorf("extracting enrollment_time_azure_ad_group_ids: %s", diagsToString(diags))
-		}
-		uuids := make([]uuid.UUID, 0, len(groupIdStrings))
-		for _, s := range groupIdStrings {
-			if !s.IsNull() && !s.IsUnknown() {
-				parsed, err := uuid.Parse(s.ValueString())
-				if err != nil {
-					return nil, fmt.Errorf("parsing UUID %q in enrollment_time_azure_ad_group_ids: %w", s.ValueString(), err)
-				}
-				uuids = append(uuids, parsed)
-			}
-		}
-		requestBody.SetEnrollmentTimeAzureAdGroupIds(uuids)
-	}
+	// Note: enrollmentTimeAzureAdGroupIds is read-only for legacy Apple DEP profiles.
+	// The Graph API accepts it in PATCH/POST but silently drops the value.
+	// Enrollment time grouping support for Apple ADE is expected in a future release.
 
 	convert.FrameworkToGraphBool(data.IsMandatory, requestBody.SetIsMandatory)
 	convert.FrameworkToGraphBool(data.ProfileRemovalDisabled, requestBody.SetProfileRemovalDisabled)

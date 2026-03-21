@@ -54,6 +54,34 @@ func UseStateForUnknownObject() ObjectModifier {
 	}
 }
 
+// UseStateForUnknownObjectIncludingNull sets the plan value to the state value when the plan
+// is unknown, including when the state is null. Use this for Optional+Computed nested objects
+// where null is a valid state (e.g., "not configured"). Unlike UseStateForUnknownObject, this
+// prevents "(known after apply)" noise after import when the API returned null.
+type useStateForUnknownObjectIncludingNull struct {
+	objectModifier
+}
+
+func (m useStateForUnknownObjectIncludingNull) PlanModifyObject(ctx context.Context, req planmodifier.ObjectRequest, resp *planmodifier.ObjectResponse) {
+	if !req.PlanValue.IsUnknown() {
+		return
+	}
+
+	if req.ConfigValue.IsNull() {
+		resp.PlanValue = req.StateValue
+	}
+}
+
+// UseStateForUnknownObjectIncludingNull constructor
+func UseStateForUnknownObjectIncludingNull() ObjectModifier {
+	return useStateForUnknownObjectIncludingNull{
+		objectModifier: objectModifier{
+			description:         "Use state value (including null) if plan is unknown and config is null",
+			markdownDescription: "Use state value (including null) if plan is unknown and config is null",
+		},
+	}
+}
+
 // DefaultValueObject sets a default value to an object if the plan value is null.
 type defaultValueObject struct {
 	objectModifier

@@ -55,16 +55,16 @@ type DepMacOSEnrollmentProfileResourceModel struct {
 	TouchIdDisabled            types.Bool `tfsdk:"touch_id_disabled"`
 
 	// --- DepMacOSEnrollmentProfile: macOS-specific Setup Assistant screen control booleans ---
-	WelcomeScreenDisabled         types.Bool `tfsdk:"welcome_screen_disabled"`
-	AccessibilityScreenDisabled   types.Bool `tfsdk:"accessibility_screen_disabled"`
-	AutoUnlockWithWatchDisabled   types.Bool `tfsdk:"auto_unlock_with_watch_disabled"`
-	ChooseYourLockScreenDisabled  types.Bool `tfsdk:"choose_your_lock_screen_disabled"`
-	FileVaultDisabled             types.Bool `tfsdk:"file_vault_disabled"`
-	ICloudDiagnosticsDisabled     types.Bool `tfsdk:"i_cloud_diagnostics_disabled"`
-	ICloudStorageDisabled         types.Bool `tfsdk:"i_cloud_storage_disabled"`
-	PassCodeDisabled              types.Bool `tfsdk:"pass_code_disabled"`
-	RegistrationDisabled          types.Bool `tfsdk:"registration_disabled"`
-	ZoomDisabled                  types.Bool `tfsdk:"zoom_disabled"`
+	WelcomeScreenDisabled        types.Bool `tfsdk:"welcome_screen_disabled"`
+	AccessibilityScreenDisabled  types.Bool `tfsdk:"accessibility_screen_disabled"`
+	AutoUnlockWithWatchDisabled  types.Bool `tfsdk:"auto_unlock_with_watch_disabled"`
+	ChooseYourLockScreenDisabled types.Bool `tfsdk:"choose_your_lock_screen_disabled"`
+	FileVaultDisabled            types.Bool `tfsdk:"file_vault_disabled"`
+	ICloudDiagnosticsDisabled    types.Bool `tfsdk:"i_cloud_diagnostics_disabled"`
+	ICloudStorageDisabled        types.Bool `tfsdk:"i_cloud_storage_disabled"`
+	PassCodeDisabled             types.Bool `tfsdk:"pass_code_disabled"`
+	RegistrationDisabled         types.Bool `tfsdk:"registration_disabled"`
+	ZoomDisabled                 types.Bool `tfsdk:"zoom_disabled"`
 
 	// --- DepMacOSEnrollmentProfile: Account and enrollment behavior fields ---
 	AdminAccountFullName                          types.String `tfsdk:"admin_account_full_name"`

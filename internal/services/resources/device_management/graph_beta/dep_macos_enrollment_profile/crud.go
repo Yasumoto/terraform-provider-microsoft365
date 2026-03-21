@@ -8,6 +8,7 @@ import (
 	"github.com/deploymenttheory/terraform-provider-microsoft365/internal/constants"
 	"github.com/deploymenttheory/terraform-provider-microsoft365/internal/services/common/crud"
 	errors "github.com/deploymenttheory/terraform-provider-microsoft365/internal/services/common/errors/kiota"
+	sharedmodels "github.com/deploymenttheory/terraform-provider-microsoft365/internal/services/common/shared_models/graph_beta"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -95,6 +96,7 @@ func (r *DepMacOSEnrollmentProfileResource) Create(ctx context.Context, req reso
 // Read handles the Read operation for DEP macOS Enrollment Profile resources.
 func (r *DepMacOSEnrollmentProfileResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var object DepMacOSEnrollmentProfileResourceModel
+	var identity sharedmodels.ResourceIdentity
 
 	tflog.Debug(ctx, fmt.Sprintf("Starting Read method for: %s", ResourceName))
 
@@ -141,6 +143,15 @@ func (r *DepMacOSEnrollmentProfileResource) Read(ctx context.Context, req resour
 	resp.Diagnostics.Append(resp.State.Set(ctx, &object)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	identity.ID = object.ID.ValueString()
+
+	if resp.Identity != nil {
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Finished Read Method: %s", ResourceName))
@@ -201,8 +212,10 @@ func (r *DepMacOSEnrollmentProfileResource) Update(ctx context.Context, req reso
 	// dep_onboarding_settings_id: ensures Read uses the correct DEP token.
 	// admin_account_password: write-only field the API never returns; Read preserves
 	// whatever is in state, so we must write the plan's value (including "") here.
+	// timeouts: config-only values not returned by the API; must be carried from plan.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("dep_onboarding_settings_id"), types.StringValue(depId))...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("admin_account_password"), plan.AdminAccountPassword)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("timeouts"), plan.Timeouts)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}

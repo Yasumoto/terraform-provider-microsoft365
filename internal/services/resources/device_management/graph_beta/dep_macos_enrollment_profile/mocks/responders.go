@@ -35,9 +35,9 @@ func (m *DepMacOSEnrollmentProfileMock) RegisterMocks() {
 	// 0. GET /deviceManagement - needed for import to resolve intuneAccountId
 	httpmock.RegisterResponder("GET", `=~^https://graph\.microsoft\.com/beta/deviceManagement(\?.*)?$`, func(req *http.Request) (*http.Response, error) {
 		responseObj := map[string]any{
-			"@odata.context":   "https://graph.microsoft.com/beta/$metadata#deviceManagement",
-			"id":               "00000000-0000-0000-0000-000000000000",
-			"intuneAccountId":  "11111111-1111-1111-1111-111111111111",
+			"@odata.context":    "https://graph.microsoft.com/beta/$metadata#deviceManagement",
+			"id":                "00000000-0000-0000-0000-000000000000",
+			"intuneAccountId":   "11111111-1111-1111-1111-111111111111",
 			"subscriptionState": "active",
 		}
 		return httpmock.NewJsonResponse(200, responseObj)
